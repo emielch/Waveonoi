@@ -1,36 +1,58 @@
-<!DOCTYPE html>
-<html lang="">
-  <head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-    <title>p5.js example</title>
-    <style>
-      body {
-        padding: 0;
-        margin: 0px;
-      }
-      canvas {
-        position:absolute;
-        width: 100% !important;
-        height: 100% !important;
-        margin: 0;
-        padding: 0;
-      }
-    </style>
-    <script src="p5.min.js"></script>
-    <script src="p5.dom.min.js"></script>
-    <script src="sketch.js"></script>
-    <script src="GUIelem.js"></script>
-    <script src="MainGUI.js"></script>
-    <script src="TimeScroller.js"></script>
-    <script src="TimeSelector.js"></script>
-    <script src="Button.js"></script>
-    <script src="PopUp.js"></script>
-    <script src="Slider.js"></script>
-    <script src="TouchManager.js"></script>
-    <script src="ElemScroller.js"></script>
+<!-- <meta http-equiv='refresh' content='0; url=gui.html' /> -->
 
-  </head>
-  <body>
-  </body>
+
+<!DOCTYPE html>
+<html>
+<head>
+<title>Waveonoi WebGUI</title>
+<meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
+</head>
+<body>
+
+<script type="text/javascript">
+function setBlock(ID,r,g,b,isTimer,time,audio){
+	const url='/set?send=1,' + ID + ',' + r + ',' + g + ',' + b + ',' + isTimer + ',' + time + ',' + audio;
+	sendData(url);
+}
+
+function syncTime(){
+	var d = new Date();
+	var timeStamp = Math.floor(Date.now() / 1000) - d.getTimezoneOffset() * 60;
+	
+	const url='/set?send=2,' + timeStamp;
+	sendData(url);
+}
+
+function sendData(url){
+	console.log(url);
+	const Http = new XMLHttpRequest();
+	Http.open("GET", url);
+	Http.send();
+	Http.onreadystatechange=(e)=>{
+		var response = Http.responseText;
+		console.log(response);
+	}
+}
+
+function requestData(){
+	const Http = new XMLHttpRequest();
+	const url='/getData';
+	console.log(url);
+	Http.open("GET", url);
+	Http.send();
+	Http.onreadystatechange=(e)=>{
+		var response = Http.responseText;
+		console.log(response);
+		var obj = JSON.parse(response);
+		for (i in obj) {
+			pjs.setBlock(obj[i].ID,obj[i].r,obj[i].g,obj[i].b,obj[i].isTimer,obj[i].savedTime);
+		}
+	}
+}
+
+
+syncTime();
+
+</script>
+</body>
 </html>

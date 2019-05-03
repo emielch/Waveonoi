@@ -12,8 +12,8 @@ DNSServer dnsServer;
 
 #define NUM_REC 40
 
-const char* APssid = "ESP32_webserver";
-const char* APpassword = "12345ESP32";
+const char* APssid = "Waveonoi";
+const char* APpassword = "ALF2016FTWL";
 
 const char *OTAName = "ESP32";           // A name and a password for the OTA service
 const char *OTAPassword = "ESP32";
@@ -23,6 +23,7 @@ WebServer server(80);
 
 void setup(void) {
 	Serial.begin(115200);
+	Serial2.begin(115200);
 
 	startWiFi();                 // Start a Wi-Fi access point, and try to connect to some given access points. Then wait for either an AP or STA connection
 
@@ -139,11 +140,32 @@ void startSPIFFS() { // Start the SPIFFS and list all contents
 
 void startServer() { // Start a HTTP server with a file read handler and an upload handler
 
+	server.on("/set", handleSet);
+
 	server.onNotFound(handleNotFound);          // if someone requests any other file or page, go to function 'handleNotFound'
 												// and check if the file exists
 	server.begin();
 
 }
+
+
+void handleSet() {
+	String message = "";
+	Serial.println("sending settings to Waveonoi:");
+
+	for (uint8_t i = 0; i < server.args(); i++) {
+		if (server.argName(i) == "send") {
+			Serial2.println(server.arg(i));
+			Serial.println(server.arg(i));
+			message += "Message sent to Waveonoi!";
+		}
+	}
+	Serial.println();
+
+	server.send(200, "text/plain", message);
+}
+
+
 
 String responseHTML = ""
 "<meta http-equiv='refresh' content='0; url=index.html' />";
