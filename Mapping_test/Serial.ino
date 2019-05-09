@@ -39,19 +39,62 @@ void parseMasterSwitch() {
 }
 
 void parseEpoch() {
-	long long ts = atoll(strtok(0, ","));
+	time_t ts = atoll(strtok(0, ","));
 	setTime(ts);
+
+	Serial.print("NEW TIME:\t");
+	Serial.print(getHours(ts));
+	printDigits(getMinutes(ts));
+	printDigits(getSeconds(ts));
+	Serial.println();
+
+	checkAlarms();
 }
 
 void parseTimer() {
 	long onTime = atol(strtok(0, ","));
 	long offTime = atol(strtok(0, ","));
 
+
+	Serial.println("NEW ALARMS: ");
+	Serial.print("ON: \t");
+	printTime(onTime);
+	Serial.print("OFF: \t");
+	printTime(offTime);
+	Serial.println();
+
 	Alarm.free(onAlarmID);
 	Alarm.free(offAlarmID);
 
 	onAlarmID = Alarm.alarmRepeat(getHours(onTime), getMinutes(onTime), getSeconds(onTime), turnOn);
 	offAlarmID = Alarm.alarmRepeat(getHours(offTime), getMinutes(offTime), getSeconds(offTime), turnOff);
+
+	checkAlarms();
+}
+
+void checkAlarms() {
+	long currT = hour() * 60 * 60 + minute() * 60 + second();
+	long onTime = Alarm.read(onAlarmID);
+	long offTime = Alarm.read(offAlarmID);
+
+	Serial.println(onTime);
+	Serial.println(offTime);
+
+	/*Alarm.free(onAlarmID);
+	Alarm.free(offAlarmID);
+
+	onAlarmID = Alarm.alarmRepeat(getHours(onTime), getMinutes(onTime), getSeconds(onTime), turnOn);
+	offAlarmID = Alarm.alarmRepeat(getHours(offTime), getMinutes(offTime), getSeconds(offTime), turnOff);*/
+
+
+	if (onTime < offTime) {
+		if (currT > onTime && currT < offTime) turnOn();
+		else turnOff();
+	}
+	else {
+		if (currT > offTime && currT < onTime) turnOff();
+		else turnOn();
+	}
 }
 
 int getHours(unsigned long val) {

@@ -130,9 +130,17 @@ void loop() {
 
 	calcDt();
 	if (sincePrint > 1000) {
-		Serial.print("FPS: ");
+		Serial.println();
+		Serial.print("FPS: \t");
 		Serial.println(getFPS());
-		digitalClockDisplay();
+		Serial.print("Curr: \t");
+		printTime(now());
+		Serial.print("ON: \t");
+		printTime(Alarm.read(onAlarmID));
+		Serial.print("OFF: \t");
+		printTime(Alarm.read(offAlarmID));
+		Serial.println();
+
 		sincePrint -= 1000;
 	}
 }
@@ -150,17 +158,10 @@ void turnOff() {
 	Serial.println("turn Off");
 }
 
-void digitalClockDisplay() {
-	// digital clock display of the time
-	Serial.print(hour());
-	printDigits(minute());
-	printDigits(second());
-	//Serial.print(" ");
-	//Serial.print(day());
-	//Serial.print(" ");
-	//Serial.print(month());
-	//Serial.print(" ");
-	//Serial.print(year());
+void printTime(long t) {
+	Serial.print(getHours(t));
+	printDigits(getMinutes(t));
+	printDigits(getSeconds(t));
 	Serial.println();
 }
 
