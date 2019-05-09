@@ -26,6 +26,8 @@ const int gridcellAm = GRID_X * GRID_Y;
 GridCell grid[gridcellAm];
 
 AlarmId onAlarmID, offAlarmID;
+long onTime = 28800;
+long offTime = 72000;
 bool masterSwitch = true;
 
 
@@ -88,8 +90,7 @@ void setup() {
 		Serial.println("RTC has set the system time");
 	}
 
-	onAlarmID = Alarm.alarmRepeat(8, 30, 0, turnOn);
-	offAlarmID = Alarm.alarmRepeat(20, 0, 0, turnOff);
+	setAlarms();
 }
 
 time_t getTeensy3Time()

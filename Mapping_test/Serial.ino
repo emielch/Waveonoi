@@ -48,13 +48,13 @@ void parseEpoch() {
 	printDigits(getSeconds(ts));
 	Serial.println();
 
-	checkAlarms();
+	setAlarms();
+	checkOnOff();
 }
 
 void parseTimer() {
-	long onTime = atol(strtok(0, ","));
-	long offTime = atol(strtok(0, ","));
-
+	onTime = atol(strtok(0, ","));
+	offTime = atol(strtok(0, ","));
 
 	Serial.println("NEW ALARMS: ");
 	Serial.print("ON: \t");
@@ -63,29 +63,12 @@ void parseTimer() {
 	printTime(offTime);
 	Serial.println();
 
-	Alarm.free(onAlarmID);
-	Alarm.free(offAlarmID);
-
-	onAlarmID = Alarm.alarmRepeat(getHours(onTime), getMinutes(onTime), getSeconds(onTime), turnOn);
-	offAlarmID = Alarm.alarmRepeat(getHours(offTime), getMinutes(offTime), getSeconds(offTime), turnOff);
-
-	checkAlarms();
+	setAlarms();
+	checkOnOff();
 }
 
-void checkAlarms() {
+void checkOnOff() {
 	long currT = hour() * 60 * 60 + minute() * 60 + second();
-	long onTime = Alarm.read(onAlarmID);
-	long offTime = Alarm.read(offAlarmID);
-
-	Serial.println(onTime);
-	Serial.println(offTime);
-
-	/*Alarm.free(onAlarmID);
-	Alarm.free(offAlarmID);
-
-	onAlarmID = Alarm.alarmRepeat(getHours(onTime), getMinutes(onTime), getSeconds(onTime), turnOn);
-	offAlarmID = Alarm.alarmRepeat(getHours(offTime), getMinutes(offTime), getSeconds(offTime), turnOff);*/
-
 
 	if (onTime < offTime) {
 		if (currT > onTime && currT < offTime) turnOn();
@@ -95,6 +78,14 @@ void checkAlarms() {
 		if (currT > offTime && currT < onTime) turnOff();
 		else turnOn();
 	}
+}
+
+void setAlarms() {
+	Alarm.free(onAlarmID);
+	Alarm.free(offAlarmID);
+
+	onAlarmID = Alarm.alarmRepeat(getHours(onTime), getMinutes(onTime), getSeconds(onTime), turnOn);
+	offAlarmID = Alarm.alarmRepeat(getHours(offTime), getMinutes(offTime), getSeconds(offTime), turnOff);
 }
 
 int getHours(unsigned long val) {
