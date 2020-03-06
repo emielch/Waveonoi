@@ -5,9 +5,6 @@
 #include <Colore.h>
 #include "LED.h"
 
-#include <TimeLib.h>
-#include <TimeAlarms.h>
-
 #include <OctoWS2811_Dither.h>
 
 const int ledsPerStrip = 227;
@@ -25,10 +22,11 @@ Orb orbs[orbAm];
 const int gridcellAm = GRID_X * GRID_Y;
 GridCell grid[gridcellAm];
 
-AlarmId onAlarmID, offAlarmID;
-long onTime = 28800;
-long offTime = 72000;
+
 bool masterSwitch = true;
+
+unsigned long onTime = 28800;
+unsigned long offTime = 72000;
 
 
 void set_ledLib(int pixel, byte r, byte g, byte b) {
@@ -71,7 +69,6 @@ float fadeSpd = 20;
 void setup() {
 	//while (!Serial) {}
 	Serial1.begin(115200);
-	setSyncProvider(getTeensy3Time);
 	delay(1000);
 	strip.begin();
 	ledAm = sizeof(leds) / sizeof(LED);
@@ -82,29 +79,18 @@ void setup() {
 	for (int i = 0; i < orbAm; i++) {
 		orbs[i].init(random(150, 400), 55, i*137.508, xMax, yMax);
 	}
-
-	if (timeStatus() != timeSet) {
-		Serial.println("Unable to sync with the RTC");
-	}
-	else {
-		Serial.println("RTC has set the system time");
-	}
-
-	setAlarms();
+ 
 }
 
-time_t getTeensy3Time()
-{
-	return Teensy3Clock.get();
-}
+
 
 elapsedMillis sincePrint = 0;
 
 float dt;
 
 void loop() {
-	Alarm.delay(0);
 	checkSerial();
+  alarmLoop();
 	reset_ledLib();
 
 	if (turnedOn && bri < 100) {
@@ -134,13 +120,7 @@ void loop() {
 		Serial.println();
 		Serial.print("FPS: \t");
 		Serial.println(getFPS());
-		Serial.print("Curr: \t");
-		printTime(now());
-		Serial.print("ON: \t");
-		printTime(Alarm.read(onAlarmID));
-		Serial.print("OFF: \t");
-		printTime(Alarm.read(offAlarmID));
-		Serial.println();
+		printCurrTime();
 
 		sincePrint -= 1000;
 	}
@@ -149,29 +129,16 @@ void loop() {
 
 void turnOn() {
 	if (masterSwitch) {
+    if(turnedOn) return;
 		turnedOn = true;
 		Serial.println("turn On");
 	}
 }
 
 void turnOff() {
+  if(!turnedOn) return;
 	turnedOn = false;
 	Serial.println("turn Off");
-}
-
-void printTime(long t) {
-	Serial.print(getHours(t));
-	printDigits(getMinutes(t));
-	printDigits(getSeconds(t));
-	Serial.println();
-}
-
-void printDigits(int digits) {
-	// utility function for digital clock display: prints preceding colon and leading 0
-	Serial.print(":");
-	if (digits < 10)
-		Serial.print('0');
-	Serial.print(digits);
 }
 
 

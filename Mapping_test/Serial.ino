@@ -40,6 +40,7 @@ void parseMasterSwitch() {
 
 void parseEpoch() {
 	time_t ts = atoll(strtok(0, ","));
+  
 	setTime(ts);
 
 	Serial.print("NEW TIME:\t");
@@ -47,9 +48,6 @@ void parseEpoch() {
 	printDigits(getMinutes(ts));
 	printDigits(getSeconds(ts));
 	Serial.println();
-
-	setAlarms();
-	checkOnOff();
 }
 
 void parseTimer() {
@@ -62,38 +60,4 @@ void parseTimer() {
 	Serial.print("OFF: \t");
 	printTime(offTime);
 	Serial.println();
-
-	setAlarms();
-	checkOnOff();
-}
-
-void checkOnOff() {
-	long currT = hour() * 60 * 60 + minute() * 60 + second();
-
-	if (onTime < offTime) {
-		if (currT > onTime && currT < offTime) turnOn();
-		else turnOff();
-	}
-	else {
-		if (currT > offTime && currT < onTime) turnOff();
-		else turnOn();
-	}
-}
-
-void setAlarms() {
-	Alarm.free(onAlarmID);
-	Alarm.free(offAlarmID);
-
-	onAlarmID = Alarm.alarmRepeat(getHours(onTime), getMinutes(onTime), getSeconds(onTime), turnOn);
-	offAlarmID = Alarm.alarmRepeat(getHours(offTime), getMinutes(offTime), getSeconds(offTime), turnOff);
-}
-
-int getHours(unsigned long val) {
-	return val / 60 / 60 - (val / 60 / 60 / 24 * 24);
-}
-int getMinutes(unsigned long val) {
-	return val / 60 - (val / 60 / 60 * 60);
-}
-int getSeconds(unsigned long val) {
-	return val - (val / 60 * 60);
 }
