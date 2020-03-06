@@ -90,7 +90,7 @@ float dt;
 
 void loop() {
 	checkSerial();
-  alarmLoop();
+  //alarmLoop();
 	reset_ledLib();
 
 	if (turnedOn && bri < 100) {
