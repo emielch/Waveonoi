@@ -4,15 +4,18 @@
 #include "Orb.h"
 #include <Colore.h>
 #include "LED.h"
+#include "LUT.h"
 
-#include <OctoWS2811_Dither.h>
+#include <OctoWS2811.h>
 
 const int ledsPerStrip = 227;
-DMAMEM int displayMemory[ledsPerStrip * 6];
-COL_RGB copyMemory[ledsPerStrip * 8];
-COL_RGB drawingMemory[ledsPerStrip * 8];
+
+DMAMEM int displayMemory[ledsPerStrip*6];
+int drawingMemory[ledsPerStrip*6];
+
 const int config = WS2811_GRB | WS2811_800kHz;
-OctoWS2811_Dither strip(ledsPerStrip, displayMemory, copyMemory, drawingMemory, config);
+
+OctoWS2811 strip(ledsPerStrip, displayMemory, drawingMemory, config);
 
 const int orbAm = 5;
 Orb orbs[orbAm];
@@ -30,8 +33,8 @@ unsigned long offTime = 72000;
 
 
 void set_ledLib(int pixel, byte r, byte g, byte b) {
+	//strip.setPixel(pixel, LUT[r], LUT[g], LUT[b]);
 	strip.setPixel(pixel, r, g, b);
-	//strip.setPixel(pixel, r, g, b);
 }
 
 
@@ -49,11 +52,11 @@ void reset_ledLib() {
 
 
 Color get_ledLib(int pixel) {
-	//uint32_t conn = strip.getPixel(pixel);  // retrieve the color that has already been saved
-	//byte b = conn & 255;       // unpack the color
-	//byte g = conn >> 8 & 255;
-	//byte r = conn >> 16 & 255;
-	Color pixelCol(drawingMemory[pixel].r, drawingMemory[pixel].g, drawingMemory[pixel].b, RGB_MODE);
+	uint32_t conn = strip.getPixel(pixel);  // retrieve the color that has already been saved
+	byte b = conn & 255;       // unpack the color
+	byte g = conn >> 8 & 255;
+	byte r = conn >> 16 & 255;
+	Color pixelCol(r, g, b, RGB_MODE);
 	return pixelCol;
 }
 
