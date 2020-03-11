@@ -56,7 +56,7 @@ Color get_ledLib(int pixel) {
 	byte b = conn & 255;       // unpack the color
 	byte g = conn >> 8 & 255;
 	byte r = conn >> 16 & 255;
-	Color pixelCol(drawingMemory[pixel].r, drawingMemory[pixel].g, drawingMemory[pixel].b, RGB_MODE);
+	Color pixelCol(r, g, b, RGB_MODE);
 	return pixelCol;
 }
 
