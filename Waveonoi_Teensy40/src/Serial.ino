@@ -27,6 +27,14 @@ void parseSerial() {
 	if (messID == 1) parseMasterSwitch();
 	if (messID == 2) parseEpoch();
 	if (messID == 3) parseTimer();
+	if (messID == 4) parseMode();
+}
+
+void parseMode() {  // "4,<mode>" with mode counting from 1
+	char* tok = strtok(0, ",");
+	if (!tok) return;
+	engine.setMode(atoi(tok) - 1);
+	saveSettings();
 }
 
 

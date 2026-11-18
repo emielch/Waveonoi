@@ -3,15 +3,11 @@
 #ifndef _LEDLAYOUT_h
 #define _LEDLAYOUT_h
 
-#if defined(ARDUINO) && ARDUINO >= 100
-#include "Arduino.h"
-#else
-#include "WProgram.h"
-#endif
+// Defines the layout array, so include it from exactly one .cpp/.ino file.
 
 #include "LED.h"
 
-LED leds[] = {
+const LED leds[] = {
 	{0, 0, 43, 239},
 	{0, 1, 43, 237},
 	{0, 2, 43, 235},

@@ -1,21 +1,15 @@
-// LED.h
+// LED.h - one entry of the physical LED layout (see ledLayout.h)
 
 #ifndef _LED_h
 #define _LED_h
 
-#if defined(ARDUINO) && ARDUINO >= 100
-#include "Arduino.h"
-#else
-#include "WProgram.h"
-#endif
+#include <stdint.h>
 
 struct LED {
-	byte channel, ledID;
-	int xPos, yPos;
-	LED* nextLED;
+	uint8_t channel;  // OctoWS2811 output (0..7)
+	uint8_t ledID;    // index along that strip
+	int16_t xPos;     // layout x: wall height, 0 = bottom edge
+	int16_t yPos;     // layout y: wall width, 0 = left edge
 };
 
-
-
 #endif
-
