@@ -6,7 +6,7 @@
 #include "LED.h"
 #include "LUT.h"
 
-#include <OctoWS2811.h>
+#include <OctoWS2811_Dither.h>
 
 const int ledsPerStrip = 227;
 
@@ -15,7 +15,7 @@ int drawingMemory[ledsPerStrip*6];
 
 const int config = WS2811_GRB | WS2811_800kHz;
 
-OctoWS2811 strip(ledsPerStrip, displayMemory, drawingMemory, config);
+OctoWS2811_Dither strip(ledsPerStrip, displayMemory, drawingMemory, config);
 
 const int orbAm = 5;
 Orb orbs[orbAm];

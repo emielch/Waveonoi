@@ -21,7 +21,7 @@ void Orb::init(float _size, float _spd, float _hue, int _xBound, int _yBound)
 	ySpd = random(-_spd, _spd);;
 	size = _size;
 	hue = _hue;
-	bri = 100;
+	bri = 50;
 
 }
 
